@@ -1,0 +1,3 @@
+# Terraform
+.terraform
+terraform/aws/variables_secret.tf
