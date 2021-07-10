@@ -17,6 +17,9 @@ terraform {
     kubernetes = {
       version = "~> 2.3"
     }
+    external = {
+      version = "~> 2.1"
+    }
   }
 }
 
@@ -30,7 +33,7 @@ provider "aws" {
   default_tags {
     tags = {
       Terraform = true
-      Owner       = "yastani"
+      Owner     = "yastani"
     }
   }
 }
@@ -46,13 +49,8 @@ provider "aws" {
   default_tags {
     tags = {
       Terraform = true
-      Owner       = "yastani"
+      Owner     = "yastani"
     }
   }
 }
 
-provider "kubernetes" {
-  host                   = data.aws_eks_cluster.cluster.endpoint
-  cluster_ca_certificate = sensitive(base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data))
-  token                  = data.aws_eks_cluster_auth.cluster.token
-}

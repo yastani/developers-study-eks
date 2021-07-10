@@ -1,3 +1,4 @@
 # Terraform
 .terraform
+*.tfstate
 terraform/aws/variables_secret.tf
