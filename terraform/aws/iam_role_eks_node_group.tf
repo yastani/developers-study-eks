@@ -1,9 +1,9 @@
 locals {
-  iam_role_eks_node_group_name = substr(replace("${local.service_prefix}_eks_node_group", "_", "-"), 0, 32)
+  iam_role_study_eks_node_group_name = substr(replace("${local.service_prefix}_study_eks_node_group", "_", "-"), 0, 32)
 }
 
-resource "aws_iam_role" "eks_node_group" {
-  name_prefix = local.iam_role_eks_node_group_name
+resource "aws_iam_role" "study_eks_node_group" {
+  name_prefix = local.iam_role_study_eks_node_group_name
   assume_role_policy = jsonencode(
     {
       Version = "2012-10-17"
@@ -24,7 +24,7 @@ resource "aws_iam_role" "eks_node_group" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "eks_node_group" {
+resource "aws_iam_role_policy_attachment" "study_eks_node_group" {
   for_each = toset(
     [
       "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy",
@@ -33,6 +33,6 @@ resource "aws_iam_role_policy_attachment" "eks_node_group" {
     ]
   )
 
-  role       = aws_iam_role.eks_node_group.id
+  role       = aws_iam_role.study_eks_node_group.id
   policy_arn = each.value
 }

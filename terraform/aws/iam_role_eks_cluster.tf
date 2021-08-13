@@ -1,10 +1,10 @@
 locals {
-  iam_role_eks_cluster_name         = substr(replace("${local.service_prefix}_eks_cluster", "_", "-"), 0, 32)
-  iam_role_eks_fargate_profile_name = substr(replace("${local.service_prefix}_eks_fargate_profile", "_", "-"), 0, 32)
+  iam_role_study_eks_cluster_name         = substr(replace("${local.service_prefix}_study_eks_cluster", "_", "-"), 0, 32)
+  iam_role_study_eks_fargate_profile_name = substr(replace("${local.service_prefix}_study_eks_fargate_profile", "_", "-"), 0, 32)
 }
 
-resource "aws_iam_role" "eks_cluster" {
-  name_prefix = local.iam_role_eks_cluster_name
+resource "aws_iam_role" "study_eks_cluster" {
+  name_prefix = local.iam_role_study_eks_cluster_name
   assume_role_policy = jsonencode(
     {
       Version = "2012-10-17"
@@ -25,8 +25,8 @@ resource "aws_iam_role" "eks_cluster" {
   }
 }
 
-resource "aws_iam_role_policy" "eks_cluster" {
-  role = aws_iam_role.eks_cluster.id
+resource "aws_iam_role_policy" "study_eks_cluster" {
+  role = aws_iam_role.study_eks_cluster.id
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
@@ -48,7 +48,7 @@ resource "aws_iam_role_policy" "eks_cluster" {
   })
 }
 
-resource "aws_iam_role_policy_attachment" "eks_cluster" {
+resource "aws_iam_role_policy_attachment" "study_eks_cluster" {
   for_each = toset(
     [
       "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy",
@@ -56,12 +56,12 @@ resource "aws_iam_role_policy_attachment" "eks_cluster" {
     ]
   )
 
-  role       = aws_iam_role.eks_cluster.id
+  role       = aws_iam_role.study_eks_cluster.id
   policy_arn = each.value
 }
 
-resource "aws_iam_role" "eks_fargate_profile" {
-  name_prefix = local.iam_role_eks_fargate_profile_name
+resource "aws_iam_role" "study_eks_fargate_profile" {
+  name_prefix = local.iam_role_study_eks_fargate_profile_name
   assume_role_policy = jsonencode(
     {
       Version = "2012-10-17"
@@ -82,13 +82,13 @@ resource "aws_iam_role" "eks_fargate_profile" {
   }
 }
 
-resource "aws_iam_role_policy_attachment" "eks_fargate_profile" {
+resource "aws_iam_role_policy_attachment" "study_eks_fargate_profile" {
   for_each = toset(
     [
       "arn:aws:iam::aws:policy/AmazonEKSFargatePodExecutionRolePolicy"
     ]
   )
 
-  role       = aws_iam_role.eks_fargate_profile.id
+  role       = aws_iam_role.study_eks_fargate_profile.id
   policy_arn = each.value
 }

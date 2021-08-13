@@ -1,14 +1,14 @@
 locals {
-  eks_cluster_name         = replace("${local.service_prefix}_consul_cluster", "_", "-")
-  eks_fargate_profile_name = replace("${local.service_prefix}_consul_fargate_profile", "_", "-")
+  eks_cluster_name         = replace("${local.service_prefix}_study_eks_cluster", "_", "-")
+  eks_fargate_profile_name = replace("${local.service_prefix}_study_eks_fargate_profile", "_", "-")
 }
 
-resource "aws_cloudwatch_log_group" "eks_cluster_consul" {
+resource "aws_cloudwatch_log_group" "study_eks_cluster" {
   name              = "/aws/eks/cluster/${local.eks_cluster_name}"
   retention_in_days = 7
 }
 
-resource "aws_kms_key" "eks_cluster_consul_v120" {
+resource "aws_kms_key" "study_eks_cluster" {
   is_enabled               = true
   enable_key_rotation      = false
   description              = "This KMS Key is used in the Encryption of EKS."
@@ -17,24 +17,24 @@ resource "aws_kms_key" "eks_cluster_consul_v120" {
   deletion_window_in_days  = 7
 }
 
-resource "aws_kms_alias" "eks_cluster_consul_v120" {
+resource "aws_kms_alias" "study_eks_cluster" {
   name_prefix   = "alias/eks/cluster/${local.eks_cluster_name}"
-  target_key_id = aws_kms_key.eks_cluster_consul_v120.key_id
+  target_key_id = aws_kms_key.study_eks_cluster.key_id
 
   lifecycle {
     create_before_destroy = true
   }
 }
 
-resource "aws_eks_cluster" "consul_v120" {
+resource "aws_eks_cluster" "study_eks_v120" {
   depends_on = [
-    aws_cloudwatch_log_group.eks_cluster_consul,
-    aws_iam_role_policy_attachment.eks_cluster,
-    aws_iam_role_policy_attachment.eks_fargate_profile
+    aws_cloudwatch_log_group.study_eks_cluster,
+    aws_iam_role_policy_attachment.study_eks_cluster,
+    aws_iam_role_policy_attachment.study_eks_fargate_profile
   ]
 
   name     = local.eks_cluster_name
-  role_arn = aws_iam_role.eks_cluster.arn
+  role_arn = aws_iam_role.study_eks_cluster.arn
   version  = "1.20"
   enabled_cluster_log_types = [
     "api",
@@ -59,20 +59,20 @@ resource "aws_eks_cluster" "consul_v120" {
   encryption_config {
     resources = ["secrets"]
     provider {
-      key_arn = aws_kms_key.eks_cluster_consul_v120.arn
+      key_arn = aws_kms_key.study_eks_cluster.arn
     }
   }
 }
 
-resource "aws_eks_fargate_profile" "consul_v120" {
+resource "aws_eks_fargate_profile" "study_eks_v120" {
   depends_on = [
-    aws_iam_role.eks_fargate_profile,
-    aws_eks_cluster.consul_v120
+    aws_iam_role.study_eks_fargate_profile,
+    aws_eks_cluster.study_eks_v120
   ]
 
   fargate_profile_name   = local.eks_fargate_profile_name
-  cluster_name           = aws_eks_cluster.consul_v120.name
-  pod_execution_role_arn = aws_iam_role.eks_fargate_profile.arn
+  cluster_name           = aws_eks_cluster.study_eks_v120.name
+  pod_execution_role_arn = aws_iam_role.study_eks_fargate_profile.arn
   subnet_ids             = module.vpc_main.private_subnets
 
   selector {
